@@ -1,0 +1,13 @@
+services:
+  postgres:
+    container_name: marketplace-postgres
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: marketplace
+      PG_DATA: /data/postgres
+    volumes:
+      - ./data:/data/postgres
