@@ -35,3 +35,11 @@ model Attachment {
 
   @@map("attachments")
 }
+
+model Category {
+  id    String @id
+  title String
+  slug  String @unique
+
+  @@map("categories")
+}
