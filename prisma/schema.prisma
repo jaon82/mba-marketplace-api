@@ -30,11 +30,12 @@ model User {
 }
 
 model Attachment {
-  id  String @id @default(uuid())
-  url String
+  id        String  @id @default(uuid())
+  url       String
+  productId String? @map("product_id")
 
-  users    User[]
-  products Product[]
+  users   User[]
+  product Product? @relation(fields: [productId], references: [id])
 
   @@map("attachments")
 }
