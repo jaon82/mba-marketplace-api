@@ -1,6 +1,7 @@
 import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product';
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product';
 import { EditUserUseCase } from '@/domain/marketplace/application/use-cases/edit-user';
+import { FetchProductsByOwnerUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner';
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products';
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id';
 import { GetUserProfileUseCase } from '@/domain/marketplace/application/use-cases/get-user-profile';
@@ -34,6 +35,7 @@ import { UserController } from './controllers/user.controller';
     GetProductByIdUseCase,
     EditProductUseCase,
     FetchRecentProductsUseCase,
+    FetchProductsByOwnerUseCase,
   ],
 })
 export class HttpModule {}

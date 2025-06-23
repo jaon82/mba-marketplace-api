@@ -21,7 +21,6 @@ export class PrismaProductDetailsMapper {
   static toDomain(raw: PrismaProductDetails): ProductDetails {
     return ProductDetails.create({
       id: new UniqueEntityID(raw.id),
-      productId: new UniqueEntityID(raw.id),
       ownerId: new UniqueEntityID(raw.owner.id),
       title: raw.title,
       priceInCents: raw.priceInCents,

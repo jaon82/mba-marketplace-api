@@ -7,7 +7,6 @@ import { User } from '../user';
 
 export interface ProductDetailsProps {
   id: UniqueEntityID;
-  productId: UniqueEntityID;
   ownerId: UniqueEntityID;
   title: string;
   description: string;

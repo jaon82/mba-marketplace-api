@@ -1,5 +1,6 @@
 import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product';
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product';
+import { FetchProductsByOwnerUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner';
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products';
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
@@ -35,6 +36,7 @@ export class ProductsController {
     private getProductByIdUseCase: GetProductByIdUseCase,
     private editProductUseCase: EditProductUseCase,
     private fetchRecentProductsUseCase: FetchRecentProductsUseCase,
+    private fetchProductsByOwnerUseCase: FetchProductsByOwnerUseCase,
   ) {}
 
   @Post()
@@ -97,6 +99,18 @@ export class ProductsController {
         product: ProductDetailsPresenter.toHTTP(product),
       };
     }
+  }
+
+  @Get('/me')
+  async getAllBySeller(@CurrentUser() user: UserPayload) {
+    const result = await this.fetchProductsByOwnerUseCase.execute(user.sub);
+    if (result.isLeft()) {
+      throw new BadRequestException();
+    }
+    const { products } = result.value;
+    return {
+      product: products.map(ProductPresenter.toHTTP),
+    };
   }
 
   @Get('/:id')

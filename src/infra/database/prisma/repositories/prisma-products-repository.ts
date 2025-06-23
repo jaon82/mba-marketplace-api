@@ -66,7 +66,7 @@ export class PrismaProductsRepository implements ProductsRepository {
     return products.map(PrismaProductDetailsMapper.toDomain);
   }
 
-  async findManyByOwner(ownerId: string): Promise<Product[]> {
+  async findManyByOwner(ownerId: string): Promise<ProductDetails[]> {
     const products = await this.prismaService.product.findMany({
       where: {
         ownerId,
@@ -74,8 +74,17 @@ export class PrismaProductsRepository implements ProductsRepository {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
     });
-    return products.map(PrismaProductMapper.toDomain);
+    return products.map(PrismaProductDetailsMapper.toDomain);
   }
 
   async create(product: Product): Promise<void> {

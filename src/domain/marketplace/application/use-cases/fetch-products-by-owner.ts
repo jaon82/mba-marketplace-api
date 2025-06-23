@@ -1,12 +1,12 @@
 import { Either, right } from '@/core/either';
-import { Product } from '@/domain/marketplace/enterprise/entities/product';
 import { Injectable } from '@nestjs/common';
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details';
 import { ProductsRepository } from '../repositories/products-repository';
 
 type FetchProductsByOwnerUseCaseResponse = Either<
   null,
   {
-    products: Product[];
+    products: ProductDetails[];
   }
 >;
 

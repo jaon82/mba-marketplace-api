@@ -62,7 +62,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
       return attachment;
     });
     return ProductDetails.create({
-      productId: product.id,
+      id: product.id,
       ownerId: product.ownerId,
       owner: author,
       category: category,
