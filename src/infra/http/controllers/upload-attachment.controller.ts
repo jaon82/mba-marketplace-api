@@ -11,6 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AttachmentPresenter } from '../presenters/attachment-presenter';
 
 @Controller('/attachments')
 export class UploadAttachmentController {
@@ -51,7 +52,7 @@ export class UploadAttachmentController {
     }
     const { attachment } = result.value;
     return {
-      attachmentId: attachment.id.toString(),
+      attachments: AttachmentPresenter.toHTTP(attachment),
     };
   }
 }
