@@ -30,7 +30,7 @@ export class RegisterProductViewUseCase {
     viewerId,
     productId,
   }: RegisterProductViewUseCaseRequest): Promise<RegisterProductViewUseCaseResponse> {
-    const product = await this.productsRepository.findById(productId);
+    const product = await this.productsRepository.findDetailsById(productId);
     if (!product) {
       return left(new ResourceNotFoundError());
     }

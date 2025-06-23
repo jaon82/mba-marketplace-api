@@ -4,6 +4,7 @@ import { EditProductStatusUseCase } from '@/domain/marketplace/application/use-c
 import { FetchProductsByOwnerUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner';
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products';
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id';
+import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use-cases/register-product-view';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
 import { UserPayload } from '@/infra/auth/jwt.strategy';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
@@ -20,6 +21,7 @@ import {
 import { z } from 'zod';
 import { ProductDetailsPresenter } from '../presenters/product-details-presenter';
 import { ProductPresenter } from '../presenters/product-presenter';
+import { ProductViewPresenter } from '../presenters/product-view-presenter';
 
 const createProductBodySchema = z.object({
   title: z.string(),
@@ -40,6 +42,7 @@ export class ProductsController {
     private fetchRecentProductsUseCase: FetchRecentProductsUseCase,
     private fetchProductsByOwnerUseCase: FetchProductsByOwnerUseCase,
     private editProductStatusUseCase: EditProductStatusUseCase,
+    private registerProductViewUseCase: RegisterProductViewUseCase,
   ) {}
 
   @Post()
@@ -138,6 +141,19 @@ export class ProductsController {
     return {
       product: products.map(ProductPresenter.toHTTP),
     };
+  }
+
+  @Post('/:id/views')
+  async view(@Param('id') productId: string, @CurrentUser() user: UserPayload) {
+    const viewerId = user.sub;
+    const result = await this.registerProductViewUseCase.execute({
+      productId,
+      viewerId,
+    });
+    if (result.isLeft()) {
+      throw new BadRequestException();
+    }
+    return ProductViewPresenter.toHTTP(result.value.view);
   }
 
   @Patch('/:id/:status')

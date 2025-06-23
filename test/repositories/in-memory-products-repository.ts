@@ -29,12 +29,12 @@ export class InMemoryProductsRepository implements ProductsRepository {
     if (!product) {
       return null;
     }
-    const author = this.usersRepository.items.find((user) => {
+    const owner = this.usersRepository.items.find((user) => {
       return user.id.equals(product.ownerId);
     });
-    if (!author) {
+    if (!owner) {
       throw new Error(
-        `Author with ID "${product.ownerId.toString()}" does not exist.`,
+        `Owner with ID "${product.ownerId.toString()}" does not exist.`,
       );
     }
     const category = this.categoriesRepository.items.find((category) => {
@@ -64,7 +64,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return ProductDetails.create({
       id: product.id,
       ownerId: product.ownerId,
-      owner: author,
+      owner: owner,
       category: category,
       title: product.title,
       description: product.description,

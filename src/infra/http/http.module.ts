@@ -6,6 +6,7 @@ import { FetchProductsByOwnerUseCase } from '@/domain/marketplace/application/us
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products';
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id';
 import { GetUserProfileUseCase } from '@/domain/marketplace/application/use-cases/get-user-profile';
+import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use-cases/register-product-view';
 import { RegisterUserUseCase } from '@/domain/marketplace/application/use-cases/register-user';
 import { UploadAndCreateAttachmentUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachment';
 import { Module } from '@nestjs/common';
@@ -38,6 +39,7 @@ import { UserController } from './controllers/user.controller';
     FetchRecentProductsUseCase,
     FetchProductsByOwnerUseCase,
     EditProductStatusUseCase,
+    RegisterProductViewUseCase,
   ],
 })
 export class HttpModule {}

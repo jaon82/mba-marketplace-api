@@ -30,10 +30,11 @@ export class PrismaViewsRepository implements ViewsRepository {
     return 30;
   }
 
-  async create(view: View): Promise<void> {
+  async create(view: View): Promise<View> {
     const data = PrismaViewMapper.toPrisma(view);
     await this.prisma.view.create({
       data,
     });
+    return view;
   }
 }

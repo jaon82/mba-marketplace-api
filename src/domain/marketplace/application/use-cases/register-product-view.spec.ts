@@ -1,3 +1,4 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { makeProduct } from 'test/factories/make-product';
 import { makeUser } from 'test/factories/make-user';
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository';
@@ -40,7 +41,12 @@ describe('View a Product', () => {
   });
 
   it('should be able to view a product', async () => {
-    const product = makeProduct();
+    const productOwner = makeUser();
+    await inMemoryUsersRepository.create(productOwner);
+    const product = makeProduct({
+      ownerId: productOwner.id,
+      categoryId: new UniqueEntityID('1'),
+    });
     const viewer = makeUser();
     await inMemoryUsersRepository.create(viewer);
     await inMemoryProductsRepository.create(product);
