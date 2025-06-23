@@ -1,5 +1,6 @@
 import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product';
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product';
+import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products';
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
 import { UserPayload } from '@/infra/auth/jwt.strategy';
@@ -14,6 +15,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { z } from 'zod';
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter';
 import { ProductPresenter } from '../presenters/product-presenter';
 
 const createProductBodySchema = z.object({
@@ -32,6 +34,7 @@ export class ProductsController {
     private createProductUseCase: CreateProductUseCase,
     private getProductByIdUseCase: GetProductByIdUseCase,
     private editProductUseCase: EditProductUseCase,
+    private fetchRecentProductsUseCase: FetchRecentProductsUseCase,
   ) {}
 
   @Post()
@@ -59,7 +62,7 @@ export class ProductsController {
     if (fetchResult.isRight()) {
       const { product } = fetchResult.value;
       return {
-        product: ProductPresenter.toHTTP(product),
+        product: ProductDetailsPresenter.toHTTP(product),
       };
     }
   }
@@ -91,7 +94,7 @@ export class ProductsController {
     if (fetchResult.isRight()) {
       const { product } = fetchResult.value;
       return {
-        product: ProductPresenter.toHTTP(product),
+        product: ProductDetailsPresenter.toHTTP(product),
       };
     }
   }
@@ -104,7 +107,19 @@ export class ProductsController {
     }
     const { product } = result.value;
     return {
-      product: ProductPresenter.toHTTP(product),
+      product: ProductDetailsPresenter.toHTTP(product),
+    };
+  }
+
+  @Get()
+  async getAll() {
+    const result = await this.fetchRecentProductsUseCase.execute();
+    if (result.isLeft()) {
+      throw new BadRequestException();
+    }
+    const { products } = result.value;
+    return {
+      product: products.map(ProductPresenter.toHTTP),
     };
   }
 }

@@ -23,9 +23,6 @@ export class ProductDetails extends ValueObject<ProductDetailsProps> {
   get id() {
     return this.props.id;
   }
-  get productId() {
-    return this.props.productId;
-  }
   get ownerId() {
     return this.props.ownerId;
   }

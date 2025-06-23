@@ -48,13 +48,22 @@ export class PrismaProductsRepository implements ProductsRepository {
     return productDetails;
   }
 
-  async findManyRecent(): Promise<Product[]> {
+  async findManyRecent(): Promise<ProductDetails[]> {
     const products = await this.prismaService.product.findMany({
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
     });
-    return products.map(PrismaProductMapper.toDomain);
+    return products.map(PrismaProductDetailsMapper.toDomain);
   }
 
   async findManyByOwner(ownerId: string): Promise<Product[]> {
