@@ -32,7 +32,11 @@ export class PrismaProductsRepository implements ProductsRepository {
         id,
       },
       include: {
-        owner: true,
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
         category: true,
         attachments: true,
       },

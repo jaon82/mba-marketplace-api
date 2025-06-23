@@ -6,6 +6,7 @@ import { ProductStatus } from '../product';
 import { User } from '../user';
 
 export interface ProductDetailsProps {
+  id: UniqueEntityID;
   productId: UniqueEntityID;
   ownerId: UniqueEntityID;
   title: string;
@@ -19,6 +20,9 @@ export interface ProductDetailsProps {
 }
 
 export class ProductDetails extends ValueObject<ProductDetailsProps> {
+  get id() {
+    return this.props.id;
+  }
   get productId() {
     return this.props.productId;
   }
