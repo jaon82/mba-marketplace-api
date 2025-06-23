@@ -1,5 +1,6 @@
 import { EditUserUseCase } from '@/domain/marketplace/application/use-cases/edit-user';
 import { UserAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/user-already-exists-error';
+import { GetUserProfileUseCase } from '@/domain/marketplace/application/use-cases/get-user-profile';
 import { RegisterUserUseCase } from '@/domain/marketplace/application/use-cases/register-user';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
 import { UserPayload } from '@/infra/auth/jwt.strategy';
@@ -10,6 +11,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Get,
   Post,
   Put,
   UsePipes,
@@ -43,6 +45,7 @@ export class UserController {
   constructor(
     private registerStudentUseCase: RegisterUserUseCase,
     private editUserUseCase: EditUserUseCase,
+    private getUserProfileUseCase: GetUserProfileUseCase,
   ) {}
 
   @Public()
@@ -102,5 +105,14 @@ export class UserController {
     }
     const seller = result.value.user;
     return { seller: UserPresenter.toHTTP(seller) };
+  }
+
+  @Get('/me')
+  async handle(@CurrentUser() user: UserPayload) {
+    const result = await this.getUserProfileUseCase.execute(user.sub);
+    if (result.isLeft()) {
+      throw new BadRequestException();
+    }
+    return { seller: UserPresenter.toHTTP(result.value.user) };
   }
 }

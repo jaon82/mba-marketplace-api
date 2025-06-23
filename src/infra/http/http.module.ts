@@ -1,4 +1,5 @@
 import { EditUserUseCase } from '@/domain/marketplace/application/use-cases/edit-user';
+import { GetUserProfileUseCase } from '@/domain/marketplace/application/use-cases/get-user-profile';
 import { RegisterUserUseCase } from '@/domain/marketplace/application/use-cases/register-user';
 import { UploadAndCreateAttachmentUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachment';
 import { Module } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { UserController } from './controllers/user.controller';
     RegisterUserUseCase,
     EditUserUseCase,
     UploadAndCreateAttachmentUseCase,
+    GetUserProfileUseCase,
   ],
 })
 export class HttpModule {}

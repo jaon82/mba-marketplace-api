@@ -24,7 +24,7 @@ model User {
 
   avatar   Attachment? @relation(fields: [avatarId], references: [id])
   products Product[]   @relation(name: "owner")
-  View     View[]
+  views    View[]
 
   @@map("users")
 }

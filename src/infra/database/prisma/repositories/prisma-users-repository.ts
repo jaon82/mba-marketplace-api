@@ -13,6 +13,9 @@ export class PrismaUsersRepository implements UsersRepository {
       where: {
         id,
       },
+      include: {
+        avatar: true,
+      },
     });
     if (!user) {
       return null;
