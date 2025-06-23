@@ -1,61 +1,106 @@
+import { EditUserUseCase } from '@/domain/marketplace/application/use-cases/edit-user';
+import { UserAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/user-already-exists-error';
+import { RegisterUserUseCase } from '@/domain/marketplace/application/use-cases/register-user';
+import { CurrentUser } from '@/infra/auth/current-user-decorator';
+import { UserPayload } from '@/infra/auth/jwt.strategy';
+import { Public } from '@/infra/auth/public';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
-import { PrismaService } from '@/infra/prisma/prisma.service';
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Controller,
   Post,
+  Put,
   UsePipes,
 } from '@nestjs/common';
-import { hash } from 'bcryptjs';
 import { z } from 'zod';
+import { UserPresenter } from '../presenters/user-presenter';
 
 const createUserBodySchema = z.object({
   name: z.string(),
   phone: z.string(),
   email: z.string().email(),
   password: z.string(),
+  passwordConfirmation: z.string(),
+  avatarId: z.string().optional(),
 });
 type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 
+const editUserBodySchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  email: z.string().email(),
+  password: z.string().optional(),
+  newPassword: z.string().optional(),
+  avatarId: z.string().optional(),
+});
+type EditUserBodySchema = z.infer<typeof editUserBodySchema>;
+const editValidationPipe = new ZodValidationPipe(editUserBodySchema);
+
 @Controller('/sellers')
 export class UserController {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private registerStudentUseCase: RegisterUserUseCase,
+    private editUserUseCase: EditUserUseCase,
+  ) {}
 
+  @Public()
   @Post()
   @UsePipes(new ZodValidationPipe(createUserBodySchema))
   async createUser(@Body() body: CreateUserBodySchema) {
-    const { name, phone, email, password } = body;
+    const { name, phone, email, password, passwordConfirmation, avatarId } =
+      body;
 
-    const userWithSameEmail = await this.prismaService.user.findUnique({
-      where: {
-        email,
-      },
+    const result = await this.registerStudentUseCase.execute({
+      name,
+      phone,
+      email,
+      password,
+      passwordConfirmation,
+      avatarId,
     });
 
-    if (userWithSameEmail) {
-      throw new ConflictException('User with same email already exists.');
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case UserAlreadyExistsError:
+          throw new ConflictException(error.message);
+        default:
+          throw new BadRequestException(error.message);
+      }
     }
+    const seller = result.value.user;
+    return { seller: UserPresenter.toHTTP(seller) };
+  }
 
-    const userWithSamePhone = await this.prismaService.user.findUnique({
-      where: {
-        phone,
-      },
+  @Put()
+  async editUser(
+    @Body(editValidationPipe) body: EditUserBodySchema,
+    @CurrentUser() user: UserPayload,
+  ) {
+    const { name, phone, email, password, newPassword, avatarId } = body;
+
+    const result = await this.editUserUseCase.execute({
+      email,
+      name,
+      phone,
+      userId: user.sub,
+      avatarId,
+      newPassword,
+      password,
     });
 
-    if (userWithSamePhone) {
-      throw new ConflictException('User with same phone already exists.');
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case UserAlreadyExistsError:
+          throw new ConflictException(error.message);
+        default:
+          throw new BadRequestException(error.message);
+      }
     }
-
-    const hashedPassword = await hash(password, 8);
-
-    await this.prismaService.user.create({
-      data: {
-        name,
-        phone,
-        email,
-        password: hashedPassword,
-      },
-    });
+    const seller = result.value.user;
+    return { seller: UserPresenter.toHTTP(seller) };
   }
 }

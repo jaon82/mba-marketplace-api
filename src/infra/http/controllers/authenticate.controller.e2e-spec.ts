@@ -1,5 +1,5 @@
 import { AppModule } from '@/infra/app.module';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { hash } from 'bcryptjs';
@@ -18,7 +18,7 @@ describe('Authenticate (E2E)', () => {
     await app.init();
   });
 
-  test('[POST] /sellers/sessions', async () => {
+  test('[POST] /users/sessions', async () => {
     await prisma.user.create({
       data: {
         name: 'John Doe',
@@ -28,7 +28,7 @@ describe('Authenticate (E2E)', () => {
       },
     });
     const response = await request(app.getHttpServer())
-      .post('/sellers/sessions')
+      .post('/users/sessions')
       .send({
         email: 'johndoe@example.com',
         password: '123456',

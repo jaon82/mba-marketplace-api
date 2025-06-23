@@ -1,5 +1,5 @@
 import { AppModule } from '@/infra/app.module';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -17,8 +17,8 @@ describe('Create user (E2E)', () => {
     await app.init();
   });
 
-  test('[POST] /sellers', async () => {
-    const response = await request(app.getHttpServer()).post('/sellers').send({
+  test('[POST] /users', async () => {
+    const response = await request(app.getHttpServer()).post('/users').send({
       name: 'John Doe',
       email: 'johndoe@example.com',
       phone: '9999999999',

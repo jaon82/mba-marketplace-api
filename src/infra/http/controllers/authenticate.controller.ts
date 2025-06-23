@@ -1,5 +1,6 @@
+import { Public } from '@/infra/auth/public';
+import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
-import { PrismaService } from '@/infra/prisma/prisma.service';
 import {
   Body,
   Controller,
@@ -17,6 +18,7 @@ const authenticateBodySchema = z.object({
 });
 type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>;
 
+@Public()
 @Controller()
 export class AuthenticateController {
   constructor(
