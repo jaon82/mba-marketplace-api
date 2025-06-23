@@ -8,6 +8,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Post,
   Put,
@@ -93,5 +94,17 @@ export class ProductsController {
         product: ProductPresenter.toHTTP(product),
       };
     }
+  }
+
+  @Get('/:id')
+  async get(@Param('id') productId: string) {
+    const result = await this.getProductByIdUseCase.execute({ id: productId });
+    if (result.isLeft()) {
+      throw new BadRequestException();
+    }
+    const { product } = result.value;
+    return {
+      product: ProductPresenter.toHTTP(product),
+    };
   }
 }
