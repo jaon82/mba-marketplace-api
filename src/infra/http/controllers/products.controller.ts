@@ -1,5 +1,6 @@
 import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product';
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product';
+import { EditProductStatusUseCase } from '@/domain/marketplace/application/use-cases/edit-product-status';
 import { FetchProductsByOwnerUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner';
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products';
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id';
@@ -12,6 +13,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
@@ -37,6 +39,7 @@ export class ProductsController {
     private editProductUseCase: EditProductUseCase,
     private fetchRecentProductsUseCase: FetchRecentProductsUseCase,
     private fetchProductsByOwnerUseCase: FetchProductsByOwnerUseCase,
+    private editProductStatusUseCase: EditProductStatusUseCase,
   ) {}
 
   @Post()
@@ -135,5 +138,31 @@ export class ProductsController {
     return {
       product: products.map(ProductPresenter.toHTTP),
     };
+  }
+
+  @Patch('/:id/:status')
+  async editStatus(
+    @CurrentUser() user: UserPayload,
+    @Param('id') productId: string,
+    @Param('status') status: string,
+  ) {
+    const ownerId = user.sub;
+    const result = await this.editProductStatusUseCase.execute({
+      ownerId,
+      productId,
+      status,
+    });
+    if (result.isLeft()) {
+      throw new BadRequestException();
+    }
+    const fetchResult = await this.getProductByIdUseCase.execute({
+      id: result.value.product.id.toString(),
+    });
+    if (fetchResult.isRight()) {
+      const { product } = fetchResult.value;
+      return {
+        product: ProductDetailsPresenter.toHTTP(product),
+      };
+    }
   }
 }
